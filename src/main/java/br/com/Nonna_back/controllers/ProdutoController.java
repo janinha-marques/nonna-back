@@ -3,13 +3,17 @@ package br.com.Nonna_back.controllers;
 
 import br.com.Nonna_back.Services.ProdutoService;
 import br.com.Nonna_back.models.Produto;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.apache.coyote.BadRequestException;
+import org.apache.coyote.Response;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
+@RequestMapping("/produtos")
 @CrossOrigin(origins = "*")
 public class ProdutoController {
     private final ProdutoService service;
@@ -18,9 +22,25 @@ public class ProdutoController {
         this.service = service;
     }
 
-    @GetMapping("/produtos")
-    List<Produto> getTodosProdutos() {
+    @GetMapping()
+    List<Produto> getTodosprtodutos() {
         return this.service.getTodosProdutos();
     }
 
+    @PostMapping()
+    public ResponseEntity<?> criarProduto (@RequestBody Produto produto) {
+        try {
+            this.service.criarProduto(produto);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+
+
+
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of( "erro", exception.getMessage()));
+        }
+    }
+
 }
+
+
